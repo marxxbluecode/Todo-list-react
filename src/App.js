@@ -15,35 +15,27 @@ class app extends Component {
     });
   };
 
-  addtask = () => {
-     const newtask = this.state.task;
-     if(newtask.length > 0){
+  addtask = (event) => {
+     const {task, taskList} = this.state;
+     if(task.length > 0) {
       this.setState({
-         taskList: [].concat(this.state.task, this.state.taskList ),
+         taskList: taskList.concat({
+           task: task,
+           id: Date.now()
+         }),
          task: ''
-      })
-     }
-  }
+      });
+    }
+    event.preventDefault();
+  };
   
-  onKeyDown = (event) => {
-    // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
-    if (event.key === 'Enter') {
-      this.submit();
-    }
-  }
-
-    removetask = () => {
+    removetask = (id) => {
       this.setState({
-        item: null
-      })
-    }
-
-    edittask = (event) => {
-      const taskList = this.state.taskList
-      this.setState({
-        taskList: event.target.value
-      })
-    }
+        taskList: this.state.taskList.filter((item) => {
+          return item.id !== id
+        })
+      });
+    };
 
   render(){
     return(
@@ -59,15 +51,19 @@ class app extends Component {
         />
         <button 
           className='app-btn' 
-          onClick= {this.addtask}
-          onKeydown={this.onKeyDown}>add
-          
+          onClick= {this.addtask}>
+            add
         </button>
         </div>
         <ul>
-          {this.state.taskList.map((item) => (<li className='app-itens'>{item}
-          <div><button className='icon-btn' onClick={this.edittask}> <img className='edit-icon' src={pen} alt=''/> </button>
-          <button className='icon-btn' onClick={this.removetask}> <img className='delete-icon' src={lixeira} alt='trash icon'/></button></div>
+          {this.state.taskList.map((item) => (
+          <li className='app-itens'>
+            {item.task}
+          <div>
+          <button className='icon-btn' onClick={() => {this.removetask(item.id)}}>
+             <img className='delete-icon' src={lixeira} alt='trash icon'/>
+          </button>
+          </div>
           </li>))}
         </ul>
       </div>
